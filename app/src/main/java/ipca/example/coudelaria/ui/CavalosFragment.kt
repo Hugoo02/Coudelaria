@@ -2,11 +2,10 @@ package ipca.example.coudelaria.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
+import androidx.navigation.findNavController
 import ipca.example.coudelaria.R
 import ipca.example.coudelaria.models.Cavalo
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +35,8 @@ class CavalosFragment : Fragment() {
         adapter = CavalosAdapter()
         listView?.adapter = adapter
 
+        setHasOptionsMenu(true)
+
         return rootView
     }
 
@@ -44,11 +45,10 @@ class CavalosFragment : Fragment() {
 
 
         GlobalScope.launch(Dispatchers.IO) {
-
             val client = OkHttpClient()
             val request = Request.Builder().url("http://192.168.56.50:5000/api/cavalos").build()
             client.newCall(request).execute().use { response ->
-
+                cavalos.clear()
                 val jsStr : String = response.body!!.string()
                 println(jsStr)
 
@@ -63,13 +63,28 @@ class CavalosFragment : Fragment() {
                 GlobalScope.launch (Dispatchers.Main){
                     adapter.notifyDataSetChanged()
                 }
+            }
+        }
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_cavalos,menu)
+        super.onCreateOptionsMenu(menu, inflater)
 
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+
+        when (item.itemId){
+            R.id.itemAdd -> {
+                val action = CavalosFragmentDirections.actionNavigationCavalosToAddCavaloFragment2()
+                this.view?.findNavController()?.navigate(action)
+                return true
             }
         }
 
-
+        return false
     }
 
     inner class CavalosAdapter : BaseAdapter() {
@@ -94,6 +109,12 @@ class CavalosFragment : Fragment() {
 
             textViewCod.text = cavalos[position].codCavalo.toString()
             textViewCavalo.text = cavalos[position].nomeCavalo
+
+            rowView.setOnClickListener {
+                val action = CavalosFragmentDirections
+                    .actionNavigationCavalosToEditCavaloFragment(cavalos[position].toJson().toString())
+                rowView.findNavController().navigate(action)
+            }
 
 
             return rowView
