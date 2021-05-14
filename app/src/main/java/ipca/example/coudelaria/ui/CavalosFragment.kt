@@ -17,12 +17,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
+var cavalos : MutableList<Cavalo> = arrayListOf()
 
 class CavalosFragment : Fragment() {
 
     var listView : ListView? = null
     lateinit var adapter : CavalosAdapter
-    var cavalos : MutableList<Cavalo> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +46,7 @@ class CavalosFragment : Fragment() {
 
         GlobalScope.launch(Dispatchers.IO) {
             val client = OkHttpClient()
-            val request = Request.Builder().url("http://192.168.56.50:5000/api/cavalos").build()
+            val request = Request.Builder().url("http://192.168.1.82:5000/api/cavalos").build()
             client.newCall(request).execute().use { response ->
                 cavalos.clear()
                 val jsStr : String = response.body!!.string()

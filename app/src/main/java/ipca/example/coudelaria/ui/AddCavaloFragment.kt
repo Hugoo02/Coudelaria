@@ -35,8 +35,8 @@ class AddCavaloFragment : Fragment(){
     lateinit var  buttonSave : Button
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_add_cavalo, container, false)
@@ -54,25 +54,26 @@ class AddCavaloFragment : Fragment(){
 
             GlobalScope.launch(Dispatchers.IO) {
                 val client = OkHttpClient()
+
                 val cavalo = Cavalo(
                         null,
                         editText.text.toString(),
-                        Date().toServerString(),
+                        null,
                         "M",
                         null,
                         null,
-                    10,
+                        10,
                         10  )
 
                 val requestBody = RequestBody.create(
-                    "application/json".toMediaTypeOrNull(),
-                    cavalo.toJson().toString()
-                    )
+                        "application/json".toMediaTypeOrNull(),
+                        cavalo.toJson().toString()
+                )
                 Log.d("coudelaria", cavalo.toJson().toString())
                 val request = Request.Builder()
-                    .url("http://192.168.56.50:5000/api/cavalos")
-                    .post(requestBody)
-                    .build()
+                        .url("http://192.168.1.82:5000/api/cavalos")
+                        .post(requestBody)
+                        .build()
                 client.newCall(request).execute().use { response ->
                     Log.d("coudelaria", response.message)
                     GlobalScope.launch (Dispatchers.Main){
